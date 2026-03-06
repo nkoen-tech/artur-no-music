@@ -2,110 +2,117 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Сколько Артурчик нас кормит завтраками о выходе альбома?</title>
+<title>Сколько Артурчик нас кормит завтраками?</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
 
 <style>
-
 body{
-margin:0;
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-text-align:center;
-color:white;
-font-family:"Space Grotesk",sans-serif;
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    text-align:center;
+    color:white;
+    font-family:"Space Grotesk",sans-serif;
 
-background:linear-gradient(140deg,#020202,#070707,#0b0b0b,#050505);
-background-size:400% 400%;
-animation:bgmove 20s ease infinite;
+    background:linear-gradient(140deg,#020202,#070707,#0b0b0b,#050505);
+    background-size:400% 400%;
+    animation:bgmove 20s ease infinite;
 }
 
 @keyframes bgmove{
-0%{background-position:0% 50%;}
-50%{background-position:100% 50%;}
-100%{background-position:0% 50%;}
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
 }
 
 h1{
-font-size:44px;
-max-width:900px;
-margin-bottom:40px;
-font-weight:600;
-position:relative;
+    font-size:44px;
+    max-width:900px;
+    margin-bottom:40px;
+    font-weight:600;
+    position:relative;
 }
 
 h1::after{
-content:attr(data-text);
-position:absolute;
-left:2px;
-top:2px;
-color:#ff4f4f;
-opacity:0.25;
+    content:attr(data-text);
+    position:absolute;
+    left:2px;
+    top:2px;
+    color:#ff4f4f;
+    opacity:0.25;
 }
 
 #timer{
-font-family:"Orbitron",monospace;
-font-size:48px;
-background:rgba(255,255,255,0.05);
-padding:30px 60px;
-border-radius:14px;
-margin-bottom:25px;
-box-shadow:0 0 20px rgba(255,255,255,0.08);
-animation:pulse 3s infinite;
+    font-family:"Orbitron",monospace;
+    font-size:48px;
+    background:rgba(255,255,255,0.05);
+    padding:30px 60px;
+    border-radius:14px;
+    margin-bottom:25px;
+    box-shadow:0 0 20px rgba(255,255,255,0.08);
+    animation:pulse 3s infinite;
 }
 
 @keyframes pulse{
-0%{box-shadow:0 0 10px rgba(255,255,255,0.05);}
-50%{box-shadow:0 0 25px rgba(255,255,255,0.15);}
-100%{box-shadow:0 0 10px rgba(255,255,255,0.05);}
+    0%{box-shadow:0 0 10px rgba(255,255,255,0.05);}
+    50%{box-shadow:0 0 25px rgba(255,255,255,0.15);}
+    100%{box-shadow:0 0 10px rgba(255,255,255,0.05);}
 }
 
 .subtitle{
-opacity:0.6;
-margin-bottom:40px;
-font-size:18px;
+    opacity:0.6;
+    margin-bottom:40px;
+    font-size:18px;
 }
 
 button{
-background:#151515;
-border:1px solid #2a2a2a;
-color:white;
-padding:16px 36px;
-font-size:18px;
-border-radius:12px;
-cursor:pointer;
-transition:0.25s;
+    background:#151515;
+    border:1px solid #2a2a2a;
+    color:white;
+    padding:16px 36px;
+    font-size:18px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.25s;
 }
 
 button:hover{
-background:#242424;
-transform:scale(1.06);
+    background:#242424;
+    transform:scale(1.06);
 }
 
 #answer{
-margin-top:25px;
-font-size:22px;
-min-height:30px;
-opacity:0.9;
+    margin-top:25px;
+    font-size:22px;
+    min-height:30px;
+    opacity:0.9;
 }
 
 .status{
-margin-top:18px;
-font-size:14px;
-opacity:0.4;
-font-family:monospace;
-animation:blink 3s infinite;
+    margin-top:18px;
+    font-size:14px;
+    opacity:0.4;
+    font-family:monospace;
+    animation:blink 3s infinite;
 }
 
 @keyframes blink{
-0%,100%{opacity:0.3}
-50%{opacity:0.8}
+    0%,100%{opacity:0.3}
+    50%{opacity:0.8}
 }
 
+/* Стикер */
+#sticker {
+    position: absolute;
+    width: 100px;
+    top: 100px;
+    left: 100px;
+    pointer-events: none;
+}
 </style>
 </head>
 
@@ -129,55 +136,84 @@ animation:blink 3s infinite;
 система мониторинга релиза активна
 </div>
 
-<script>
+<!-- Стикер -->
+<img src="sticker.png" id="sticker">
 
+<script>
+// --- Таймер с правильным склонением "год/года/лет" ---
 const startDate = new Date("2021-05-18T00:00:00");
 
+function getYearWord(y){
+    if(y%10===1 && y%100!==11) return "год";
+    if([2,3,4].includes(y%10) && ![12,13,14].includes(y%100)) return "года";
+    return "лет";
+}
+
 function updateTimer(){
+    const now = new Date();
+    const diff = now - startDate;
 
-const now = new Date();
-const diff = now - startDate;
+    const seconds = Math.floor(diff/1000)%60;
+    const minutes = Math.floor(diff/60000)%60;
+    const hours = Math.floor(diff/3600000)%24;
+    const days = Math.floor(diff/86400000)%365;
+    const years = Math.floor(diff/31536000000);
 
-const seconds = Math.floor(diff/1000)%60;
-const minutes = Math.floor(diff/60000)%60;
-const hours = Math.floor(diff/3600000)%24;
-const days = Math.floor(diff/86400000)%365;
-const years = Math.floor(diff/31536000000);
-
-document.getElementById("timer").innerHTML =
-years+" лет "+
-days+" дней "+
-hours+" часов "+
-minutes+" минут "+
-seconds+" секунд";
-
+    document.getElementById("timer").innerHTML =
+        years+" "+getYearWord(years)+" "+
+        days+" дней "+
+        hours+" часов "+
+        minutes+" минут "+
+        seconds+" секунд";
 }
 
 setInterval(updateTimer,1000);
 updateTimer();
 
+// --- Кнопка "Вышло?" ---
 const answers = [
-
-"Нет",
-"До сих пор нет",
-"Всё ещё нет",
-"А ты думал да?",
-"Нет. Попробуй позже",
-"Система не обнаружила альбом",
-"Артурчик опять пообещал",
-"Почти... но нет",
-"Ничего не произошло",
-"Нет, но надежда умирает последней"
-
+    "Нет",
+    "До сих пор нет",
+    "Всё ещё нет",
+    "А ты думал да?",
+    "Нет. Попробуй позже",
+    "Система не обнаружила альбом",
+    "Артурчик опять пообещал",
+    "Почти... но нет",
+    "Ничего не произошло",
+    "Нет, но надежда умирает последней"
 ];
 
 function checkRelease(){
-
-const randomAnswer = answers[Math.floor(Math.random()*answers.length)];
-document.getElementById("answer").innerText = randomAnswer;
-
+    const randomAnswer = answers[Math.floor(Math.random()*answers.length)];
+    document.getElementById("answer").innerText = randomAnswer;
 }
 
+// --- Прыгающий стикер ---
+let x = 100;
+let y = 100;
+let vx = 3 + Math.random()*2;
+let vy = 2 + Math.random()*2;
+
+const sticker = document.getElementById("sticker");
+
+function animateSticker(){
+    const w = window.innerWidth - sticker.offsetWidth;
+    const h = window.innerHeight - sticker.offsetHeight;
+
+    x += vx;
+    y += vy;
+
+    if(x < 0 || x > w) vx = -vx;
+    if(y < 0 || y > h) vy = -vy;
+
+    sticker.style.left = x + "px";
+    sticker.style.top = y + "px";
+
+    requestAnimationFrame(animateSticker);
+}
+
+animateSticker();
 </script>
 
 </body>
