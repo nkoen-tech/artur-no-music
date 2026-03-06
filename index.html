@@ -304,18 +304,29 @@ function updateArthurCounter(){
 fetch(`https://api.countapi.xyz/get/${counterNamespace}/${counterKey}`)
 .then(res => res.json())
 .then(data => {
+
+if(data.value !== undefined){
 document.getElementById("arthurCounter").innerText =
 "Артуру напомнили: " + data.value + " раз";
+}else{
+document.getElementById("arthurCounter").innerText =
+"Артуру пока ещё не напомнили";
+}
+
 });
 }
 
 function pressArthur(){
+
 fetch(`https://api.countapi.xyz/hit/${counterNamespace}/${counterKey}`)
 .then(res => res.json())
 .then(data => {
+
 document.getElementById("arthurCounter").innerText =
 "Артуру напомнили: " + data.value + " раз";
+
 });
+
 }
 
 updateArthurCounter();
