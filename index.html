@@ -6,35 +6,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
 <style>
 body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  text-align:center;
-  color:white;
-  font-family:"Space Grotesk",sans-serif;
-  background:linear-gradient(140deg,#020202,#070707,#0b0b0b,#050505);
-  background-size:400% 400%;
-  animation:bgmove 20s ease infinite;
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    text-align:center;
+    color:white;
+    font-family:"Space Grotesk",sans-serif;
+    background:linear-gradient(140deg,#020202,#070707,#0b0b0b,#050505);
+    background-size:400% 400%;
+    animation:bgmove 20s ease infinite;
 }
 @keyframes bgmove{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
 }
-h1{ font-size:44px; max-width:900px; margin-bottom:40px; font-weight:600; position:relative;}
-#timer{ font-family:"Orbitron",monospace; font-size:48px; background:rgba(255,255,255,0.05); padding:30px 60px; border-radius:14px; margin-bottom:25px; box-shadow:0 0 20px rgba(255,255,255,0.08);}
-.subtitle{ opacity:0.6; margin-bottom:20px; font-size:18px;}
-button{ background:#151515; border:1px solid #2a2a2a; color:white; padding:16px 36px; font-size:18px; border-radius:12px; cursor:pointer; transition:0.25s; margin:5px;}
-button:hover{ background:#242424; transform:scale(1.06);}
-#answer,#events{ margin-top:15px; font-size:20px; min-height:30px;}
-.status{ margin-top:15px; font-size:16px; opacity:0.6; font-family:monospace; animation:blink 3s infinite;}
-@keyframes blink{ 0%,100%{opacity:0.3} 50%{opacity:0.8} }
-#convert{ margin-top:20px; font-size:18px; opacity:0.7; }
-#arthurCounter{ margin-top:10px; font-size:20px; transition:0.2s; }
-#sticker{ position:absolute; width:100px; top:100px; left:100px; pointer-events:none; }
+h1{font-size:44px;max-width:900px;margin-bottom:40px;font-weight:600;position:relative;}
+#timer{font-family:"Orbitron",monospace;font-size:48px;background:rgba(255,255,255,0.05);padding:30px 60px;border-radius:14px;margin-bottom:25px;box-shadow:0 0 20px rgba(255,255,255,0.08);}
+.subtitle{opacity:0.6;margin-bottom:20px;font-size:18px;}
+button{background:#151515;border:1px solid #2a2a2a;color:white;padding:16px 36px;font-size:18px;border-radius:12px;cursor:pointer;transition:0.25s;margin:5px;}
+button:hover{background:#242424;transform:scale(1.06);}
+#answer,#events{margin-top:15px;font-size:20px;min-height:30px;}
+.status{margin-top:15px;font-size:16px;opacity:0.6;font-family:monospace;animation:blink 3s infinite;}
+@keyframes blink{0%,100%{opacity:0.3}50%{opacity:0.8}}
+#convert{margin-top:20px;font-size:18px;opacity:0.7;}
+#arthurCounter{margin-top:10px;font-size:20px;transition:0.2s;}
+#sticker{position:absolute;width:100px;top:100px;left:100px;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -53,115 +53,103 @@ button:hover{ background:#242424; transform:scale(1.06);}
 <div id="events"></div>
 
 <div style="margin-top:20px;">
-  <button onclick="pressArthur()">Напомнить Артуру</button>
-  <a href="https://t.me/apollo_connect" target="_blank">
-    <button>Напомнить Артуру лично</button>
-  </a>
+<button onclick="pressArthur()">Напомнить Артуру</button>
+<a href="https://t.me/apollo_connect" target="_blank"><button>Напомнить Артуру лично</button></a>
 </div>
 
 <div id="arthurCounter"></div>
-
 <div class="status"></div>
 <img src="sticker.png" id="sticker">
 
 <script>
-// --- Таймер с правильным склонением ---
+// --- Таймер ---
 const startDate = new Date("2021-05-18T00:00:00");
 function declension(n, words){
-  n = Math.abs(n);
-  if(n%10 === 1 && n%100 !== 11) return words[0];
-  if([2,3,4].includes(n%10) && ![12,13,14].includes(n%100)) return words[1];
-  return words[2];
+    n=Math.abs(n);
+    if(n%10===1 && n%100!==11) return words[0];
+    if([2,3,4].includes(n%10) && ![12,13,14].includes(n%100)) return words[1];
+    return words[2];
 }
 function updateTimer(){
-  const now = new Date();
-  const diff = now - startDate;
-  const seconds = Math.floor(diff/1000)%60;
-  const minutes = Math.floor(diff/60000)%60;
-  const hours = Math.floor(diff/3600000)%24;
-  const days = Math.floor(diff/86400000)%365;
-  const years = Math.floor(diff/31536000000);
-  document.getElementById("timer").innerHTML =
-    years + " " + declension(years,["год","года","лет"]) + " " +
-    days + " " + declension(days,["день","дня","дней"]) + " " +
-    hours + " " + declension(hours,["час","часа","часов"]) + " " +
-    minutes + " " + declension(minutes,["минута","минуты","минут"]) + " " +
-    seconds + " " + declension(seconds,["секунда","секунды","секунд"]);
-  const totalDays = Math.floor(diff/86400000);
-  const totalHours = Math.floor(diff/3600000);
-  const totalMinutes = Math.floor(diff/60000);
-  document.getElementById("convert").innerHTML =
-    `Всего: ${totalDays} ${declension(totalDays,["день","дня","дней"])}, ${totalHours} ${declension(totalHours,["час","часа","часов"])}, ${totalMinutes} ${declension(totalMinutes,["минута","минуты","минут"])}`;
+    const now=new Date();
+    const diff=now-startDate;
+    const seconds=Math.floor(diff/1000)%60;
+    const minutes=Math.floor(diff/60000)%60;
+    const hours=Math.floor(diff/3600000)%24;
+    const days=Math.floor(diff/86400000)%365;
+    const years=Math.floor(diff/31536000000);
+    document.getElementById("timer").innerHTML=
+        years+" "+declension(years,["год","года","лет"])+" "+
+        days+" "+declension(days,["день","дня","дней"])+" "+
+        hours+" "+declension(hours,["час","часа","часов"])+" "+
+        minutes+" "+declension(minutes,["минута","минуты","минут"])+" "+
+        seconds+" "+declension(seconds,["секунда","секунды","секунд"]);
+    const totalDays=Math.floor(diff/86400000);
+    const totalHours=Math.floor(diff/3600000);
+    const totalMinutes=Math.floor(diff/60000);
+    document.getElementById("convert").innerHTML=
+        `Всего: ${totalDays} ${declension(totalDays,["день","дня","дней"])}, `+
+        `${totalHours} ${declension(totalHours,["час","часа","часов"])}, `+
+        `${totalMinutes} ${declension(totalMinutes,["минута","минуты","минут"])}`;
 }
 setInterval(updateTimer,1000);
 updateTimer();
 
 // --- Кнопка "Вышло?" ---
-const answers=[
-  "Нет","До сих пор нет","Всё ещё нет","А ты думал да?",
-  "Нет. Попробуй позже","Система не обнаружила альбом",
-  "Артурчик опять пообещал","Почти... но нет",
-  "Ничего не произошло","Нет, но надежда умирает последней"
-];
+const answers=["Нет","До сих пор нет","Всё ещё нет","А ты думал да?","Нет. Попробуй позже","Система не обнаружила альбом","Артурчик опять пообещал","Почти... но нет","Ничего не произошло","Нет, но надежда умирает последней"];
 function checkRelease(){
-  const randomAnswer=answers[Math.floor(Math.random()*answers.length)];
-  document.getElementById("answer").innerText=randomAnswer;
+    document.getElementById("answer").innerText = answers[Math.floor(Math.random()*answers.length)];
 }
 
-// --- Система мониторинга релиза ---
-const statusTexts=[
-  "Сканирование Spotify...","Сканирование Apple Music...",
-  "Сканирование VK Музыки...","Сканирование Яндекс Музыки...",
-  "Артур снова обещал...","Ничего не найдено...","Черт возьми, да когда уже!"
-];
+// --- Мониторинг ---
+const statusTexts=["Сканирование Spotify...","Сканирование Apple Music...","Сканирование VK Музыки...","Сканирование Яндекс Музыки...","Артур снова обещал...","Ничего не найдено...","Черт возьми, да когда уже!"];
 let statusIndex=0;
 const statusDiv=document.querySelector(".status");
 setInterval(()=>{
-  statusDiv.innerText=statusTexts[statusIndex];
-  statusIndex=(statusIndex+1)%statusTexts.length;
+    statusDiv.innerText=statusTexts[statusIndex];
+    statusIndex=(statusIndex+1)%statusTexts.length;
 },4000);
 
 // --- Прыгающий стикер ---
-let x=100, y=100, vx=3+Math.random()*2, vy=2+Math.random()*2;
+let x=100,y=100,vx=3+Math.random()*2,vy=2+Math.random()*2;
 const sticker=document.getElementById("sticker");
 function animateSticker(){
-  const w=window.innerWidth-sticker.offsetWidth;
-  const h=window.innerHeight-sticker.offsetHeight;
-  x+=vx; y+=vy;
-  if(x<0||x>w) vx=-vx;
-  if(y<0||y>h) vy=-vy;
-  sticker.style.left=x+"px";
-  sticker.style.top=y+"px";
-  requestAnimationFrame(animateSticker);
+    const w=window.innerWidth-sticker.offsetWidth;
+    const h=window.innerHeight-sticker.offsetHeight;
+    x+=vx; y+=vy;
+    if(x<0||x>w) vx=-vx;
+    if(y<0||y>h) vy=-vy;
+    sticker.style.left=x+"px";
+    sticker.style.top=y+"px";
+    requestAnimationFrame(animateSticker);
 }
 animateSticker();
 
-// --- Случайные события ---
+// --- События ---
 const eventsArray=[
-  "2021 — трагедия на фестивале Travis Scott Astroworld",
-  "2021 — Kanye West выпустил альбом Donda",
-  "2021 — Lil Nas X взорвал интернет клипом Montero",
-  "2021 — Drake выпустил Certified Lover Boy",
-  "2021 — смерть легендарного рэпера DMX",
-  "2021 — Tyler The Creator выпустил Call Me If You Get Lost",
-  "2022 — Kendrick Lamar выпустил Mr. Morale & The Big Steppers",
-  "2022 — Elon Musk купил Twitter",
-  "2022 — ChatGPT стал самым быстрорастущим сервисом",
-  "2022 — The Weeknd побил рекорд Spotify",
-  "2023 — Travis Scott выпустил альбом Utopia",
-  "2023 — Drake выпустил For All The Dogs",
-  "2023 — мировой тур Taylor Swift стал крупнейшим",
-  "2023 — OpenAI выпустила GPT-4",
-  "2024 — Apple представила Vision Pro",
-  "2024 — Metro Boomin выпустил Heroes & Villains 2",
-  "2024 — Playboi Carti снова не выпустил альбом",
-  "2024 — мировой рынок AI превысил $1 триллион",
-  "2025 — SpaceX успешно протестировала Starship",
-  "2025 — Spotify превысил 700 млн пользователей"
+"2021 — трагедия на фестивале Travis Scott Astroworld",
+"2021 — Kanye West выпустил альбом Donda",
+"2021 — Lil Nas X взорвал интернет клипом Montero",
+"2021 — Drake выпустил Certified Lover Boy",
+"2021 — смерть легендарного рэпера DMX",
+"2021 — Tyler The Creator выпустил Call Me If You Get Lost",
+"2022 — Kendrick Lamar выпустил Mr. Morale & The Big Steppers",
+"2022 — Elon Musk купил Twitter",
+"2022 — ChatGPT стал самым быстрорастущим сервисом в истории",
+"2022 — The Weeknd побил рекорд Spotify",
+"2023 — Travis Scott выпустил альбом Utopia",
+"2023 — Drake выпустил For All The Dogs",
+"2023 — мировой тур Taylor Swift стал крупнейшим в истории",
+"2023 — OpenAI выпустила GPT-4",
+"2024 — Apple представила Vision Pro",
+"2024 — Metro Boomin выпустил альбом Heroes & Villains 2",
+"2024 — Playboi Carti снова не выпустил альбом",
+"2024 — мировой рынок AI превысил $1 триллион",
+"2025 — SpaceX успешно протестировала Starship",
+"2025 — Spotify превысил 700 млн пользователей"
 ];
 function showEvents(){
-  const randomEvent = eventsArray[Math.floor(Math.random() * eventsArray.length)];
-  document.getElementById("events").innerText = randomEvent;
+    document.getElementById("events").innerText = eventsArray[Math.floor(Math.random()*eventsArray.length)];
 }
 
 // --- Счётчик напоминаний Артуру ---
@@ -169,32 +157,33 @@ const counterNamespace="artur_album_wait";
 const counterKey="presses";
 
 function updateArthurCounter(){
-  fetch(`https://api.countapi.xyz/get/${counterNamespace}/${counterKey}`)
+    fetch(`https://api.countapi.xyz/get/${counterNamespace}/${counterKey}`)
     .then(res=>res.json())
     .then(data=>{
-      if(data.value!==undefined){
-        document.getElementById("arthurCounter").innerText = "Артуру напомнили: " + data.value + " раз";
-      }else{
-        document.getElementById("arthurCounter").innerText = "Артуру ещё не напоминали";
-      }
-    })
-    .catch(()=>{
-      document.getElementById("arthurCounter").innerText = "Артуру ещё не напоминали";
-    });
+        if(data.value!==undefined){
+            document.getElementById("arthurCounter").innerText="Артуру напомнили: "+data.value+" раз";
+        } else {
+            document.getElementById("arthurCounter").innerText="Артуру ещё не напоминали";
+        }
+    }).catch(()=>document.getElementById("arthurCounter").innerText="Артуру ещё не напоминали");
 }
+
+// --- Инициализация namespace/key (если не существует) ---
+fetch(`https://api.countapi.xyz/create?namespace=${counterNamespace}&key=${counterKey}&value=0`)
+.then(()=>updateArthurCounter())
+.catch(()=>updateArthurCounter());
 
 function pressArthur(){
-  fetch(`https://api.countapi.xyz/hit/${counterNamespace}/${counterKey}`)
+    fetch(`https://api.countapi.xyz/hit/${counterNamespace}/${counterKey}`)
     .then(res=>res.json())
     .then(data=>{
-      const el=document.getElementById("arthurCounter");
-      el.innerText = "Артуру напомнили: " + data.value + " раз";
-      el.style.transform = "scale(1.3)";
-      setTimeout(()=>{ el.style.transform="scale(1)"; },200);
+        const el=document.getElementById("arthurCounter");
+        el.innerText="Артуру напомнили: "+data.value+" раз";
+        el.style.transform="scale(1.3)";
+        setTimeout(()=>{el.style.transform="scale(1)";},200);
     });
 }
-
-updateArthurCounter();
 </script>
+
 </body>
 </html>
