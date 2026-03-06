@@ -139,6 +139,16 @@ button:hover{
 <button onclick="showEvents()">Что случилось за это время?</button>
 <div id="events"></div>
 
+<div style="margin-top:20px;">
+<button onclick="pressArthur()">Напомнить Артуру</button>
+
+<a href="https://t.me/apollo_connect" target="_blank">
+<button>Напомнить Артуру лично</button>
+</a>
+</div>
+
+<div id="arthurCounter" style="margin-top:10px; font-size:18px; opacity:0.8;"></div>
+
 <div class="status"></div>
 
 <!-- Стикер -->
@@ -286,7 +296,29 @@ function showEvents(){
     const randomEvent = eventsArray[Math.floor(Math.random() * eventsArray.length)];
     document.getElementById("events").innerText = randomEvent;
 }
+// --- Счётчик напоминаний Артуру ---
+const counterNamespace = "artur-no-album";
+const counterKey = "presses";
 
+function updateArthurCounter(){
+fetch(`https://api.countapi.xyz/get/${counterNamespace}/${counterKey}`)
+.then(res => res.json())
+.then(data => {
+document.getElementById("arthurCounter").innerText =
+"Артуру напомнили: " + data.value + " раз";
+});
+}
+
+function pressArthur(){
+fetch(`https://api.countapi.xyz/hit/${counterNamespace}/${counterKey}`)
+.then(res => res.json())
+.then(data => {
+document.getElementById("arthurCounter").innerText =
+"Артуру напомнили: " + data.value + " раз";
+});
+}
+
+updateArthurCounter();
 </script>
 </body>
 </html>
