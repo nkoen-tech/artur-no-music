@@ -318,29 +318,59 @@ document.getElementById("events").innerText=randomEvent;
 
 }
 
-/* счетчик */
+/* СЧЁТЧИК НАПОМИНАНИЙ */
 
-const counterNamespace="artur-no-album";
-const counterKey="presses";
+const counterNamespace = "artur_album_wait";
+const counterKey = "presses";
 
 function updateArthurCounter(){
 
 fetch(`https://api.countapi.xyz/get/${counterNamespace}/${counterKey}`)
-.then(res=>res.json())
-.then(data=>{
+.then(res => res.json())
+.then(data => {
 
-if(data.value!==undefined){
+if(data.value !== undefined){
 
-document.getElementById("arthurCounter").innerText=
-"Артуру напомнили: "+data.value+" раз";
+document.getElementById("arthurCounter").innerText =
+"Артуру напомнили: " + data.value + " раз";
+
+}else{
+
+document.getElementById("arthurCounter").innerText =
+"Артуру ещё не напоминали";
 
 }
 
+})
+.catch(()=>{
+document.getElementById("arthurCounter").innerText =
+"Артуру ещё не напоминали";
 });
 
 }
 
 function pressArthur(){
+
+fetch(`https://api.countapi.xyz/hit/${counterNamespace}/${counterKey}`)
+.then(res => res.json())
+.then(data => {
+
+document.getElementById("arthurCounter").innerText =
+"Артуру напомнили: " + data.value + " раз";
+
+const el = document.getElementById("arthurCounter");
+
+el.style.transform = "scale(1.3)";
+
+setTimeout(()=>{
+el.style.transform = "scale(1)";
+},200);
+
+});
+
+}
+
+updateArthurCounter();
 
 fetch(`https://api.countapi.xyz/hit/${counterNamespace}/${counterKey}`)
 .then(res=>res.json())
