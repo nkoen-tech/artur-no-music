@@ -49,10 +49,10 @@ button:hover{background:#242424;transform:scale(1.06);}
 <div id="events"></div>
 
 <div style="margin-top:20px;">
-    <button onclick="pressArthur()">Напомнить Артуру</button>
-    <a href="https://t.me/apollo_connect" target="_blank">
-        <button>Напомнить Артуру лично</button>
-    </a>
+  <button onclick="pressArthur()">Напомнить Артуру</button>
+  <a href="https://t.me/apollo_connect" target="_blank">
+    <button>Напомнить Артуру лично</button>
+  </a>
 </div>
 
 <div id="arthurCounter"></div>
@@ -78,23 +78,23 @@ function updateTimer(){
     const days=Math.floor(diff/86400000)%365;
     const years=Math.floor(diff/31536000000);
     document.getElementById("timer").innerHTML=
-        years+" "+declension(years,["год","года","лет"])+" "+
-        days+" "+declension(days,["день","дня","дней"])+" "+
-        hours+" "+declension(hours,["час","часа","часов"])+" "+
-        minutes+" "+declension(minutes,["минута","минуты","минут"])+" "+
-        seconds+" "+declension(seconds,["секунда","секунды","секунд"]);
+      years+" "+declension(years,["год","года","лет"])+" "+
+      days+" "+declension(days,["день","дня","дней"])+" "+
+      hours+" "+declension(hours,["час","часа","часов"])+" "+
+      minutes+" "+declension(minutes,["минута","минуты","минут"])+" "+
+      seconds+" "+declension(seconds,["секунда","секунды","секунд"]);
     const totalDays=Math.floor(diff/86400000);
     const totalHours=Math.floor(diff/3600000);
     const totalMinutes=Math.floor(diff/60000);
     document.getElementById("convert").innerHTML=
-        `Всего: ${totalDays} ${declension(totalDays,["день","дня","дней"])}, `+
-        `${totalHours} ${declension(totalHours,["час","часа","часов"])}, `+
-        `${totalMinutes} ${declension(totalMinutes,["минута","минуты","минут"])}`;
+      `Всего: ${totalDays} ${declension(totalDays,["день","дня","дней"])}, `+
+      `${totalHours} ${declension(totalHours,["час","часа","часов"])}, `+
+      `${totalMinutes} ${declension(totalMinutes,["минута","минуты","минут"])}`;
 }
 setInterval(updateTimer,1000);
 updateTimer();
 
-// --- Вышло? ---
+// --- Кнопка "Вышло?" ---
 const answers=["Нет","До сих пор нет","Всё ещё нет","А ты думал да?","Нет. Попробуй позже","Система не обнаружила альбом","Артурчик опять пообещал","Почти... но нет","Ничего не произошло","Нет, но надежда умирает последней"];
 function checkRelease(){
     document.getElementById("answer").innerText = answers[Math.floor(Math.random()*answers.length)];
@@ -124,7 +124,7 @@ function animateSticker(){
 }
 animateSticker();
 
-// --- Случайные события ---
+// --- События ---
 const eventsArray=[
 "2021 — трагедия на Travis Scott Astroworld",
 "2021 — Kanye West выпустил Donda",
@@ -143,36 +143,33 @@ function showEvents(){
     document.getElementById("events").innerText = eventsArray[Math.floor(Math.random()*eventsArray.length)];
 }
 
-// --- Глобальный счётчик через Countify ---
-const countKey = "arthur_clicks_counter";
+// --- Глобальный счётчик через CounterAPI.dev ---
+const countName = "arthur_wait";
 
 function updateArthurCounter(){
-    fetch(`https://api.countify.xyz/get-total/${countKey}`)
-    .then(res => res.json())
-    .then(data => {
-        if(data.value !== undefined){
-            document.getElementById("arthurCounter").innerText =
-                "Артуру напомнили: "+data.value+" раз";
-        } else {
-            document.getElementById("arthurCounter").innerText = "Артуру ещё не напоминали";
-        }
-    })
-    .catch(()=>{document.getElementById("arthurCounter").innerText="Артуру ещё не напоминали";});
+    fetch(`https://api.counterapi.dev/up?counter=${countName}`)
+      .then(res=>res.json())
+      .then(data=>{
+        document.getElementById("arthurCounter").innerText="Артуру напомнили: "+data.value+" раз";
+      })
+      .catch(()=>{
+        document.getElementById("arthurCounter").innerText="Ошибка счётчика";
+      });
 }
 
 function pressArthur(){
-    fetch(`https://api.countify.xyz/increment/${countKey}`)
-    .then(res => res.json())
-    .then(data => {
+    fetch(`https://api.counterapi.dev/up?counter=${countName}`)
+      .then(res=>res.json())
+      .then(data=>{
         const el=document.getElementById("arthurCounter");
         el.innerText="Артуру напомнили: "+data.value+" раз";
         el.style.transform="scale(1.3)";
         setTimeout(()=>el.style.transform="scale(1)",200);
-    });
+      });
 }
 
 updateArthurCounter();
-
 </script>
+
 </body>
 </html>
