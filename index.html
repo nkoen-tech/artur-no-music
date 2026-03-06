@@ -283,9 +283,8 @@ const eventsArray = [
 ];
 
 function showEvents(){
-    const shuffled = eventsArray.sort(()=>0.5-Math.random());
-    const selected = shuffled.slice(0,40);
-    document.getElementById("events").innerHTML = selected.join("<br>");
+    const randomEvent = eventsArray[Math.floor(Math.random() * eventsArray.length)];
+    document.getElementById("events").innerText = randomEvent;
 }
 
 </script>
