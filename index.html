@@ -166,9 +166,9 @@ document.getElementById("soundToggle").addEventListener("click",()=>{
     soundEnabled=!soundEnabled;
     document.getElementById("soundToggle").innerText=soundEnabled?"🔊 Включить звук":"🔇 Выключить звук";
 });
-const drumSound=new Audio("sounds/drum.mp3");
-const kickSound=new Audio("sounds/kick.mp3");
-const clapSound=new Audio("sounds/clap.mp3");
+const drumSound=new Audio("sounds/drum.wav");
+const kickSound=new Audio("sounds/kick.wav");
+const clapSound=new Audio("sounds/clap.wav");
 
 // --- Стикер ---
 let x=100,y=100,vx=3+Math.random()*2,vy=2+Math.random()*2;
