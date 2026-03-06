@@ -19,13 +19,9 @@ body{
     background-size:400% 400%;
     animation:bgmove 20s ease infinite;
 }
-@keyframes bgmove{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
-}
-h1{font-size:44px;max-width:900px;margin-bottom:40px;font-weight:600;position:relative;}
-#timer{font-family:"Orbitron",monospace;font-size:48px;background:rgba(255,255,255,0.05);padding:30px 60px;border-radius:14px;margin-bottom:25px;box-shadow:0 0 20px rgba(255,255,255,0.08);}
+@keyframes bgmove{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+h1{font-size:44px;max-width:900px;margin-bottom:40px;font-weight:600;}
+#timer{font-family:"Orbitron",monospace;font-size:48px;background:rgba(255,255,255,0.05);padding:30px 60px;border-radius:14px;margin-bottom:25px;}
 .subtitle{opacity:0.6;margin-bottom:20px;font-size:18px;}
 button{background:#151515;border:1px solid #2a2a2a;color:white;padding:16px 36px;font-size:18px;border-radius:12px;cursor:pointer;transition:0.25s;margin:5px;}
 button:hover{background:#242424;transform:scale(1.06);}
@@ -53,11 +49,14 @@ button:hover{background:#242424;transform:scale(1.06);}
 <div id="events"></div>
 
 <div style="margin-top:20px;">
-<button onclick="pressArthur()">Напомнить Артуру</button>
-<a href="https://t.me/apollo_connect" target="_blank"><button>Напомнить Артуру лично</button></a>
+    <button onclick="pressArthur()">Напомнить Артуру</button>
+    <a href="https://t.me/apollo_connect" target="_blank">
+        <button>Напомнить Артуру лично</button>
+    </a>
 </div>
 
 <div id="arthurCounter"></div>
+
 <div class="status"></div>
 <img src="sticker.png" id="sticker">
 
@@ -95,7 +94,7 @@ function updateTimer(){
 setInterval(updateTimer,1000);
 updateTimer();
 
-// --- Кнопка "Вышло?" ---
+// --- Вышло? ---
 const answers=["Нет","До сих пор нет","Всё ещё нет","А ты думал да?","Нет. Попробуй позже","Система не обнаружила альбом","Артурчик опять пообещал","Почти... но нет","Ничего не произошло","Нет, но надежда умирает последней"];
 function checkRelease(){
     document.getElementById("answer").innerText = answers[Math.floor(Math.random()*answers.length)];
@@ -125,65 +124,55 @@ function animateSticker(){
 }
 animateSticker();
 
-// --- События ---
+// --- Случайные события ---
 const eventsArray=[
-"2021 — трагедия на фестивале Travis Scott Astroworld",
-"2021 — Kanye West выпустил альбом Donda",
-"2021 — Lil Nas X взорвал интернет клипом Montero",
-"2021 — Drake выпустил Certified Lover Boy",
-"2021 — смерть легендарного рэпера DMX",
-"2021 — Tyler The Creator выпустил Call Me If You Get Lost",
-"2022 — Kendrick Lamar выпустил Mr. Morale & The Big Steppers",
+"2021 — трагедия на Travis Scott Astroworld",
+"2021 — Kanye West выпустил Donda",
+"2021 — Lil Nas X Montero",
+"2021 — Drake Certified Lover Boy",
+"2021 — смерть DMX",
+"2021 — Tyler, The Creator Call Me If You Get Lost",
+"2022 — Kendrick Lamar Mr. Morale & The Big Steppers",
 "2022 — Elon Musk купил Twitter",
-"2022 — ChatGPT стал самым быстрорастущим сервисом в истории",
-"2022 — The Weeknd побил рекорд Spotify",
-"2023 — Travis Scott выпустил альбом Utopia",
-"2023 — Drake выпустил For All The Dogs",
-"2023 — мировой тур Taylor Swift стал крупнейшим в истории",
+"2022 — ChatGPT стал популярным",
 "2023 — OpenAI выпустила GPT-4",
 "2024 — Apple представила Vision Pro",
-"2024 — Metro Boomin выпустил альбом Heroes & Villains 2",
-"2024 — Playboi Carti снова не выпустил альбом",
-"2024 — мировой рынок AI превысил $1 триллион",
-"2025 — SpaceX успешно протестировала Starship",
-"2025 — Spotify превысил 700 млн пользователей"
+"2025 — SpaceX протестировала Starship"
 ];
 function showEvents(){
     document.getElementById("events").innerText = eventsArray[Math.floor(Math.random()*eventsArray.length)];
 }
 
-// --- Счётчик напоминаний Артуру ---
-const counterNamespace="artur_album_wait";
-const counterKey="presses";
+// --- Глобальный счётчик через Countify ---
+const countKey = "arthur_clicks_counter";
 
 function updateArthurCounter(){
-    fetch(`https://api.countapi.xyz/get/${counterNamespace}/${counterKey}`)
-    .then(res=>res.json())
-    .then(data=>{
-        if(data.value!==undefined){
-            document.getElementById("arthurCounter").innerText="Артуру напомнили: "+data.value+" раз";
+    fetch(`https://api.countify.xyz/get-total/${countKey}`)
+    .then(res => res.json())
+    .then(data => {
+        if(data.value !== undefined){
+            document.getElementById("arthurCounter").innerText =
+                "Артуру напомнили: "+data.value+" раз";
         } else {
-            document.getElementById("arthurCounter").innerText="Артуру ещё не напоминали";
+            document.getElementById("arthurCounter").innerText = "Артуру ещё не напоминали";
         }
-    }).catch(()=>document.getElementById("arthurCounter").innerText="Артуру ещё не напоминали");
+    })
+    .catch(()=>{document.getElementById("arthurCounter").innerText="Артуру ещё не напоминали";});
 }
 
-// --- Инициализация namespace/key (если не существует) ---
-fetch(`https://api.countapi.xyz/create?namespace=${counterNamespace}&key=${counterKey}&value=0`)
-.then(()=>updateArthurCounter())
-.catch(()=>updateArthurCounter());
-
 function pressArthur(){
-    fetch(`https://api.countapi.xyz/hit/${counterNamespace}/${counterKey}`)
-    .then(res=>res.json())
-    .then(data=>{
+    fetch(`https://api.countify.xyz/increment/${countKey}`)
+    .then(res => res.json())
+    .then(data => {
         const el=document.getElementById("arthurCounter");
         el.innerText="Артуру напомнили: "+data.value+" раз";
         el.style.transform="scale(1.3)";
-        setTimeout(()=>{el.style.transform="scale(1)";},200);
+        setTimeout(()=>el.style.transform="scale(1)",200);
     });
 }
-</script>
 
+updateArthurCounter();
+
+</script>
 </body>
 </html>
