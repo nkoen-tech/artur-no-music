@@ -65,7 +65,7 @@ h1::after{
 
 .subtitle{
     opacity:0.6;
-    margin-bottom:40px;
+    margin-bottom:20px;
     font-size:18px;
 }
 
@@ -78,6 +78,7 @@ button{
     border-radius:12px;
     cursor:pointer;
     transition:0.25s;
+    margin:5px;
 }
 
 button:hover{
@@ -85,17 +86,17 @@ button:hover{
     transform:scale(1.06);
 }
 
-#answer{
-    margin-top:25px;
-    font-size:22px;
+#answer, #events{
+    margin-top:15px;
+    font-size:20px;
     min-height:30px;
     opacity:0.9;
 }
 
 .status{
-    margin-top:18px;
-    font-size:14px;
-    opacity:0.4;
+    margin-top:15px;
+    font-size:16px;
+    opacity:0.6;
     font-family:monospace;
     animation:blink 3s infinite;
 }
@@ -113,9 +114,14 @@ button:hover{
     left: 100px;
     pointer-events: none;
 }
+
+#convert{
+    margin-top:20px;
+    font-size:18px;
+    opacity:0.7;
+}
 </style>
 </head>
-
 <body>
 
 <h1 data-text="Сколько Артурчик нас кормит завтраками о выходе альбома?">
@@ -123,48 +129,58 @@ button:hover{
 </h1>
 
 <div id="timer"></div>
+<div id="convert"></div>
 
-<div class="subtitle">
-И до сих пор не вышло...
-</div>
+<div class="subtitle">И до сих пор не вышло...</div>
 
 <button onclick="checkRelease()">Вышло?</button>
-
 <div id="answer"></div>
 
-<div class="status">
-система мониторинга релиза активна
-</div>
+<button onclick="showEvents()">Что случилось за это время?</button>
+<div id="events"></div>
+
+<div class="status"></div>
 
 <!-- Стикер -->
 <img src="sticker.png" id="sticker">
 
 <script>
-// --- Таймер с правильным склонением "год/года/лет" ---
+// --- Таймер с правильным склонением ---
 const startDate = new Date("2021-05-18T00:00:00");
 
-function getYearWord(y){
-    if(y%10===1 && y%100!==11) return "год";
-    if([2,3,4].includes(y%10) && ![12,13,14].includes(y%100)) return "года";
-    return "лет";
+function declension(n, words){
+    n = Math.abs(n);
+    if(n%10 === 1 && n%100 !== 11) return words[0];
+    if([2,3,4].includes(n%10) && ![12,13,14].includes(n%100)) return words[1];
+    return words[2];
 }
 
 function updateTimer(){
     const now = new Date();
-    const diff = now - startDate;
+    const diffMs = now - startDate;
 
-    const seconds = Math.floor(diff/1000)%60;
-    const minutes = Math.floor(diff/60000)%60;
-    const hours = Math.floor(diff/3600000)%24;
-    const days = Math.floor(diff/86400000)%365;
-    const years = Math.floor(diff/31536000000);
+    const seconds = Math.floor(diffMs/1000)%60;
+    const minutes = Math.floor(diffMs/60000)%60;
+    const hours = Math.floor(diffMs/3600000)%24;
+    const days = Math.floor(diffMs/86400000)%365;
+    const years = Math.floor(diffMs/31536000000);
 
     document.getElementById("timer").innerHTML =
-        years+" "+getYearWord(years)+" "+
-        days+" дней "+
-        hours+" часов "+
-        minutes+" минут "+
-        seconds+" секунд";
+        years + " " + declension(years, ["год","года","лет"]) + " " +
+        days + " " + declension(days, ["день","дня","дней"]) + " " +
+        hours + " " + declension(hours, ["час","часа","часов"]) + " " +
+        minutes + " " + declension(minutes, ["минута","минуты","минут"]) + " " +
+        seconds + " " + declension(seconds, ["секунда","секунды","секунд"]);
+
+    // Конвертация в общее кол-во дней, часов, минут
+    const totalDays = Math.floor(diffMs/86400000);
+    const totalHours = Math.floor(diffMs/3600000);
+    const totalMinutes = Math.floor(diffMs/60000);
+
+    document.getElementById("convert").innerHTML =
+        `Всего: ${totalDays} ${declension(totalDays, ["день","дня","дней"])}, ` +
+        `${totalHours} ${declension(totalHours, ["час","часа","часов"])}, ` +
+        `${totalMinutes} ${declension(totalMinutes, ["минута","минуты","минут"])}`;
 }
 
 setInterval(updateTimer,1000);
@@ -189,32 +205,89 @@ function checkRelease(){
     document.getElementById("answer").innerText = randomAnswer;
 }
 
-// --- Прыгающий стикер ---
-let x = 100;
-let y = 100;
-let vx = 3 + Math.random()*2;
-let vy = 2 + Math.random()*2;
+// --- Система мониторинга релиза ---
+const statusTexts = [
+    "Сканирование Spotify...",
+    "Сканирование Apple Music...",
+    "Сканирование VK Музыки...",
+    "Сканирование Яндекс Музыки...",
+    "Артур снова обещал...",
+    "Ничего не найдено...",
+    "Черт возьми, да когда уже!"
+];
+let statusIndex = 0;
+const statusDiv = document.querySelector(".status");
+setInterval(()=>{
+    statusDiv.innerText = statusTexts[statusIndex];
+    statusIndex = (statusIndex + 1) % statusTexts.length;
+}, 4000);
 
+// --- Прыгающий стикер ---
+let x = 100, y = 100, vx = 3+Math.random()*2, vy = 2+Math.random()*2;
 const sticker = document.getElementById("sticker");
 
 function animateSticker(){
     const w = window.innerWidth - sticker.offsetWidth;
     const h = window.innerHeight - sticker.offsetHeight;
-
-    x += vx;
-    y += vy;
-
-    if(x < 0 || x > w) vx = -vx;
-    if(y < 0 || y > h) vy = -vy;
-
+    x += vx; y += vy;
+    if(x<0||x>w) vx=-vx;
+    if(y<0||y>h) vy=-vy;
     sticker.style.left = x + "px";
     sticker.style.top = y + "px";
-
     requestAnimationFrame(animateSticker);
 }
-
 animateSticker();
-</script>
 
+// --- Кнопка "Что случилось за это время?" ---
+const eventsArray = [
+"Elon Musk запустил Starship",
+"Apple представила iPhone 17",
+"Смерть рэпера Pop Smoke в 2021 году",
+"Kanye West выпустил альбом 'Donda' в 2021",
+"Drake выпустил 'Certified Lover Boy' в 2021",
+"Travis Scott трагедия на фестивале Astroworld 2021",
+"Megan Thee Stallion выпустила 'Good News' в 2020–2021",
+"DaBaby оказался в центре скандала на Rolling Loud 2021",
+"Eminem выпустил 'Music to Be Murdered By' 2020",
+"Kendrick Lamar выпустил 'Mr. Morale & The Big Steppers' 2022",
+"Lil Nas X вызвал резонанс с клипом 'Montero' 2021",
+"NFT-бум, рекордные продажи NFT 2021",
+"Пандемия COVID-19 продолжается 2021–2022",
+"Протесты Black Lives Matter 2021",
+"Летние Олимпийские игры Tokyo 2020 прошли в 2021",
+"Выборы президента США 2020–2021",
+"Бум криптовалюты, рекордные стоимости Bitcoin 2021",
+"Drake побил рекорды стриминга на Spotify 2021",
+"Playboi Carti выпустил 'Whole Lotta Red' 2020",
+"Lil Uzi Vert вставил алмаз стоимостью $24 млн в лоб 2021",
+"Tyler, The Creator выпустил 'Call Me If You Get Lost' 2021",
+"Kanye West выиграл Grammy за 'Jesus Is King' 2021",
+"DaBaby потерял контракты после гомофобных комментариев 2021",
+"Релизы Migos 'Culture III' 2021",
+"Rihanna провела шоу Savage X Fenty 2021–2022",
+"Смерть рэпера DMX — 2021",
+"XXXTentacion постумные релизы 2021–2022",
+"Doja Cat стала глобальной сенсацией 2021–2022",
+"Lizzo выпустила 'Rumors' с Cardi B 2021",
+"NLE Choppa выпустил 'Top Shotta' 2021",
+"Billie Eilish получила Grammys 2021",
+"Rapper Pop Smoke посмертно выпустил 'Shoot for the Stars' 2021",
+"Смерть рэпера MF DOOM 2021",
+"Travis Scott сотрудничество с Fortnite 2021",
+"Tesla выпустила Cybertruck",
+"Выборы в США и мировой резонанс от прихода Трампа",
+"Музыкальные премии 2022 — Grammys, BET Awards",
+"Juice WRLD выпустил посмертные хиты",
+"NFT и метавселенная продолжают расти 2022–2023",
+"Смерть рэпера XXXTentacion продолжает волновать фанатов в 2026"
+];
+
+function showEvents(){
+    const shuffled = eventsArray.sort(()=>0.5-Math.random());
+    const selected = shuffled.slice(0,40);
+    document.getElementById("events").innerHTML = selected.join("<br>");
+}
+
+</script>
 </body>
 </html>
